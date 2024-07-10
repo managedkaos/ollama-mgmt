@@ -1,4 +1,4 @@
-MODELS := mistral llama3 moondream
+MODELS := mistral llama3 moondream tinyllama orca-mini
 
 pull:
 	$(foreach model, $(MODELS), ollama pull $(model) && echo "Model $(model) updated successfully"; )
