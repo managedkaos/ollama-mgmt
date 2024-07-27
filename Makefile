@@ -1,16 +1,41 @@
-MODELS := mistral llama3 moondream tinyllama orca-mini
+OPEN_WEBUI_HOME = $(shell pwd)/open-webui
 
-pull:
-	$(foreach model, $(MODELS), ollama pull $(model) && echo "Model $(model) updated successfully"; )
+list:
+	ollama list
 
-start up:
-	docker run --rm \
-		--detach \
-		--publish 3000:8080 \
-		--add-host=host.docker.internal:host-gateway \
-		--volume $(PWD)/data:/app/backend/data \
+requirements:
+	pip3 install -r requirements.txt
+
+scrape:
+	python3 scrape.py
+
+library:
+	python3 library.py
+
+start:
+	if [ ! -d $(OPEN_WEBUI_HOME)/data ]; then mkdir $(OPEN_WEBUI_HOME)/data; fi
+
+	docker run --detach \
+		--network="host" \
+		--volume $(OPEN_WEBUI_HOME)/data:/app/backend/data \
+		--env PORT=9595 \
+		--env OLLAMA_BASE_URL=http://localhost:11434 \
+		--restart always \
 		--name open-webui \
 		ghcr.io/open-webui/open-webui:main
 
-stop down:
-	docker stop open-webui
+stop:
+	-docker stop open-webui
+
+clean: stop
+	-docker rm open-webui
+
+nuke: stop clean
+	-rm -rf $(OPEN_WEBUI_HOME)/data
+
+update: $(patsubst %,pull-%, $(shell ollama list | grep -v NAME | cut -d: -f1))
+	ollama list
+	docker pull ghcr.io/open-webui/open-webui:main
+
+pull-%:
+	ollama pull $*
