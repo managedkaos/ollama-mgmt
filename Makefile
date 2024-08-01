@@ -35,7 +35,20 @@ clean: stop
 	-docker rm open-webui
 
 nuke: stop clean
-	-rm -rf $(OPEN_WEBUI_HOME)/data
+	@echo "#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#"
+	@echo "# WARNING: This will remove all data stored by Open-WebUI."
+	@echo "# WARNING: This action is irreversible."
+	@echo "#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#"
+	@echo
+	@echo "Type CTRL+C to abort."
+	@echo
+	@read -p "Type the current date in YYYY-MM-DD format to confirm: " input_date; \
+	if [ "$$input_date" = "$(shell date +%Y-%m-%d)" ]; then \
+		echo "Date confirmed. Proceeding with removal..."; \
+		rm -rf $(OPEN_WEBUI_HOME)/data || true; \
+	else \
+		echo "Date confirmation failed. Aborting..."; \
+	fi
 
 update: $(patsubst %,pull-%, $(shell ollama list | grep -v NAME | cut -d: -f1))
 	ollama list
