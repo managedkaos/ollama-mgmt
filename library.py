@@ -12,7 +12,7 @@ def parse_updated_time(updated_str):
     return datetime.min
 
 # Load the repo list from the JSON file
-with open('repo_list.json', 'r', encoding='utf-8') as f:
+with open('library.json', 'r', encoding='utf-8') as f:
     repo_list = json.load(f)
 
 # Convert the "Updated" field to datetime and sort the list

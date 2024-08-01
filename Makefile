@@ -1,5 +1,9 @@
 OPEN_WEBUI_HOME = $(shell pwd)/open-webui
 
+status:
+	@echo "ollama     : $(shell curl -s localhost:11434 || echo "down")"
+	@echo "open-webui : $(shell curl -s -o /dev/null localhost:9595/health && echo "Open-WebUI is running" || echo "down")"
+
 list:
 	ollama list
 
@@ -9,7 +13,7 @@ requirements:
 scrape:
 	python3 scrape.py
 
-library:
+library: scrape
 	python3 library.py
 
 start:

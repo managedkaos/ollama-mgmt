@@ -67,7 +67,7 @@ if ul:
             })
 
 # Write the repo_list to a JSON file
-with open('repo_list.json', 'w', encoding='utf-8') as f:
+with open('library.json', 'w', encoding='utf-8') as f:
     json.dump(repo_list, f, ensure_ascii=False, indent=4)
 
 print('# Scrape complete!')
