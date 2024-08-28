@@ -17,16 +17,21 @@ library: scrape
 	python3 library.py
 
 start:
-	if [ ! -d $(OPEN_WEBUI_HOME)/data ]; then mkdir $(OPEN_WEBUI_HOME)/data; fi
-
-	docker run --detach \
+	if [ ! -d $(OPEN_WEBUI_HOME)/data ]; then mkdir -p $(OPEN_WEBUI_HOME)/data; fi
+	
+	-@docker run --detach \
 		--network="host" \
 		--volume $(OPEN_WEBUI_HOME)/data:/app/backend/data \
 		--env PORT=9595 \
 		--env OLLAMA_BASE_URL=http://localhost:11434 \
 		--restart always \
 		--name open-webui \
-		ghcr.io/open-webui/open-webui:main
+		ghcr.io/open-webui/open-webui:main || \
+	printf "\n\nThe container is already running.\n\n"
+	@printf "http://localhost:9595\n\n" 
+
+url:
+	@printf "\n\nhttp://localhost:9595\n\n" 
 
 stop:
 	-docker stop open-webui
@@ -56,3 +61,5 @@ update: $(patsubst %,pull-%, $(shell ollama list | grep -v NAME | cut -d: -f1))
 
 pull-%:
 	ollama pull $*
+
+.PHONY: url 
