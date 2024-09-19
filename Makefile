@@ -30,8 +30,8 @@ scrape:
 library: scrape
 	python3 library.py
 
-update:
-	python3 update.py
+update: status
+	@python3 update.py
 
 start:
 	if [ ! -d $(OPEN_WEBUI_HOME)/data ]; then mkdir -p $(OPEN_WEBUI_HOME)/data; fi
