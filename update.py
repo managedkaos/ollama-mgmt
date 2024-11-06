@@ -67,7 +67,8 @@ if __name__ == "__main__":
 
     skipped_models = [model for model in models if model not in selected_models]
 
-    print("\nModels not updated due to size:")
+    if skipped_models:
+        print("\nModels not updated due to size:")
 
-    for model in skipped_models:
-        print(f"- {model['name']} (Size: {model['size'] / (1024 ** 3):.2f} GB)")
+        for model in skipped_models:
+            print(f"- {model['name']} (Size: {model['size'] / (1024 ** 3):.2f} GB)")
