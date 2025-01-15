@@ -5,12 +5,11 @@ the model names, capabilities, sizes, updated dates, and pull counts.
 
 import json
 
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
 
+from data_config import LIBRARY_JSON, MODEL_LIBRARY_URL, setup_data_dirs
 from logger_config import setup_logger
-from data_config import setup_data_dirs, LIBRARY_JSON, MODEL_LIBRARY_URL
-
 
 # Set up logger
 logger = setup_logger(__name__)

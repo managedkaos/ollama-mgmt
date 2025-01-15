@@ -7,14 +7,19 @@ status:
 lint:
 	flake8 *.py
 	pylint *.py
+ifeq ($(CI),true)
+	isort --check-only *.py
+	black --check *.py
+else
 	isort --diff *.py
 	black --diff *.py
-
-ruff:
-	ruff format *.py
+endif
 
 black:
 	black *.py
+
+isort:
+	isort *.py
 
 list:
 	ollama list
@@ -83,4 +88,4 @@ x_update: $(patsubst %,pull-%, $(shell ollama list | grep -v NAME | cut -d: -f1)
 pull-%:
 	ollama pull $*
 
-.PHONY: status list requirements scrape library update_models start url stop clean nuke x_update
+.PHONY: status list requirements scrape library update_models start url stop clean nuke x_update isort

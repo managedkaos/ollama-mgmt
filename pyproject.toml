@@ -1,1 +1,15 @@
- 
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+
+[tool.pylint.messages_control]
+disable = "C0111,C0103"
+
+[tool.pylint.format]
+max-line-length = 88

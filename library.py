@@ -2,13 +2,14 @@
 This script reads the library.json file and prints the contents in a tabular format.
 """
 
-from datetime import datetime
 import json
+from datetime import datetime
+
 import dateparser
 from tabulate import tabulate
 
-from logger_config import setup_logger
 from data_config import LIBRARY_JSON
+from logger_config import setup_logger
 
 # Set up logger
 logger = setup_logger(__name__)
