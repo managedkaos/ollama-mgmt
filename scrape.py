@@ -1,57 +1,44 @@
+"""
+This script scrapes the Ollama model library page and extracts
+the model names, capabilities, sizes, updated dates, and pull counts.
+"""
+import json
 import logging
+import os
+
 from bs4 import BeautifulSoup
 import requests
-import json
-import os
+
+from logger_config import setup_logger
+
 
 # Configure data and logging dirs
 DATA_PATH = "./data"
-LOGS_PATH = "./logs"
 
 try:
     # Write the repo_list to a JSON file
     os.makedirs(DATA_PATH, exist_ok=True)
-    os.makedirs(LOGS_PATH, exist_ok=True)
 except OSError as e:
-    logger.error(f"Failed to create directory: {e}")
+    print(f"Failed to create directory: {e}")
     raise
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s: %(message)s",
-    handlers=[logging.FileHandler(f"{LOGS_PATH}/scraper.log"), logging.StreamHandler()],
-)
-logger = logging.getLogger(__name__)
-
-env_logging_level = os.environ.get("LOGGING_LEVEL", None)
-
-if env_logging_level:
-    # Convert string to level and set the logger level
-    try:
-        level = getattr(logging, env_logging_level.upper())
-        if level in [logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR]:
-            logger.setLevel(level)
-        else:
-            print(f"Invalid logging level: {env_logging_level}. Defaulting to INFO.")
-            logger.setLevel(logging.INFO)
-    except AttributeError:
-        # If the environment variable isn't a valid log level, default to INFO
-        logger.setLevel(logging.INFO)
+# Set up logger
+logger = setup_logger(__name__)
 
 # URL of the webpage you want to scrape
 url = os.environ.get("MODEL_LIBRARY_URL", "https://ollama.com/library")
-logger.info(f"Starting web scraping for URL: {url}")
+logger.info("Starting web scraping for URL: %s", url)
 
 try:
     # Send a GET request to fetch the raw HTML content
-    response = requests.get(url)
+    response = requests.get(url, timeout=30)
     response.raise_for_status()
     logger.debug(
-        f"Successfully retrieved page with status code: {response.status_code}"
+        "Successfully retrieved page with status code: %s",
+        response.status_code
     )
 except requests.exceptions.RequestException as e:
-    logger.error(f"Failed to fetch URL: {e}")
+    logger.error("Failed to fetch URL: %s", e)
     raise
 
 # Parse the HTML content using BeautifulSoup
@@ -64,27 +51,20 @@ repo_list = []
 # Select all model entries (they're wrapped in <a> tags)
 model_entries = soup.find_all("a", class_="group w-full space-y-5")
 if model_entries:
-    logger.info(f"Found {len(model_entries)} model entries.")
+    logger.info("Found %d model entries.", len(model_entries))
 else:
     logger.warning("No model entries found - check if page structure has changed")
 
 
-# Function to clean up text
-def clean_text(text):
-    original = text
-    cleaned = " ".join(text.split()).replace("\xa0", " ")
-    return cleaned
-
-
 for index, entry in enumerate(model_entries, 1):
-    logger.debug(f"Processing model entry {index}/{len(model_entries)}")
+    logger.debug("Processing model entry %d/%d", index, len(model_entries))
 
     # Extract the name (now using the correct selector)
     name = entry.select_one(".group-hover\\:underline").text.strip()
     if name:
-        logger.debug(f"Extracted name: {name}")
+        logger.debug("Extracted name: %s", name)
     else:
-        logger.warning(f"Name not found for entry {index}")
+        logger.warning("Name not found for entry %d", index)
 
     # Extract capabilities (tools) and sizes
     capabilities = []
@@ -97,25 +77,22 @@ for index, entry in enumerate(model_entries, 1):
         if capability_elements
         else []
     )
-    logger.debug(f"Extracted capabilities: {capabilities}")
+    logger.debug("Extracted capabilities: %s", capabilities)
 
     # Get sizes
     size_elements = entry.find_all("span", {"x-test-size": True})
     sizes = [size.text.strip() for size in size_elements] if size_elements else []
-    logger.debug(f"Extracted sizes: {sizes}")
+    logger.debug("Extracted sizes: %s", sizes)
 
     # Extract the updated date
     updated_elem = entry.find("span", {"x-test-updated": True})
     updated = updated_elem.text.strip() if updated_elem else ""
-    logger.debug(f"Extracted update date: {updated}")
+    logger.debug("Extracted update date: %s", updated)
 
     # Extract pull count and tag count
     pull_count_element = entry.find("span", {"x-test-pull-count": True})
     pull_count = pull_count_element.text.strip() if pull_count_element else ""
-    logger.debug(f"Extracted pull count: {pull_count}")
-
-    tag_count_elem = entry.find("span", attrs={"x-test-tag-count": ""})
-    tag_count = clean_text(tag_count_elem.text) if tag_count_elem else None
+    logger.debug("Extracted pull count: %s", pull_count)
 
     # Create entry dictionary
     if name:
@@ -125,20 +102,19 @@ for index, entry in enumerate(model_entries, 1):
             "sizes": sizes,
             "updated": updated,
             "pull_count": pull_count,
-            "tag_count": tag_count,
         }
         repo_list.append(entry_data)
-        logger.debug(f"Added entry to repo_list: {entry_data}")
+        logger.debug("Added entry to repo_list: %s", entry_data)
 
-logger.info(f"Processed {len(repo_list)} models.")
+logger.info("Processed %d models.", len(repo_list))
 
 try:
     # Write the repo_list to a JSON file
     with open(f"{DATA_PATH}/library.json", "w", encoding="utf-8") as f:
         json.dump(repo_list, f, ensure_ascii=False, indent=4)
-    logger.info(f"Wrote data to {DATA_PATH}/library.json")
+    logger.info("Wrote data to %s/library.json", DATA_PATH)
 except IOError as e:
-    logger.error(f"Failed to write JSON file: {e}")
+    logger.error("Failed to write JSON file: %s", e)
     raise
 
 logger.info("Scraping process complete.")

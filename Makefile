@@ -6,7 +6,7 @@ status:
 
 lint:
 	flake8 --ignore=E501,W503 *.py
-	ruff check --diff *.py
+	pylint *.py
 	black --diff *.py
 
 ruff:

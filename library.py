@@ -1,20 +1,36 @@
+"""
+This script reads the library.json file and prints the contents in a tabular format.
+"""
+from datetime import datetime
 import json
 import dateparser
-from datetime import datetime
 from tabulate import tabulate
 
+from logger_config import setup_logger
+
+# Set up logger
+logger = setup_logger(__name__)
 
 # Function to parse the "Updated" string into a datetime object
 def parse_updated_time(updated_str):
+    """
+    Parse the "Updated" string into a datetime object.
+    """
     if updated_str:
         parsed_date = dateparser.parse(updated_str)
+        logger.debug("Parsed date '%s' to %s", updated_str, parsed_date)
         return parsed_date if parsed_date else datetime.min
     return datetime.min
 
-
+logger.debug("Loading repository data from library.json")
 # Load the repo list from the JSON file
-with open("data/library.json", "r", encoding="utf-8") as f:
-    repo_list = json.load(f)
+try:
+    with open("data/library.json", "r", encoding="utf-8") as f:
+        repo_list = json.load(f)
+    logger.info("Loaded %d repositories", len(repo_list))
+except (IOError, json.JSONDecodeError) as e:
+    logger.error("Failed to load library.json: %s", e)
+    raise
 
 # Convert the "Updated" field to datetime and sort the list
 for repo in repo_list:
