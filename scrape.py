@@ -4,15 +4,27 @@ import requests
 import json
 import os
 
+# Configure data and logging dirs
+DATA_PATH = "./data"
+LOGS_PATH = "./logs"
+
+try:
+    # Write the repo_list to a JSON file
+    os.makedirs(DATA_PATH, exist_ok=True)
+    os.makedirs(LOGS_PATH, exist_ok=True)
+except OSError as e:
+    logger.error(f"Failed to create directory: {e}")
+    raise
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[logging.FileHandler("logs/scraper.log"), logging.StreamHandler()],
+    format="%(asctime)s - %(levelname)s: %(message)s",
+    handlers=[logging.FileHandler(f"{LOGS_PATH}/scraper.log"), logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
 
-env_logging_level = os.environ.get('LOGGING_LEVEL', None)
+env_logging_level = os.environ.get("LOGGING_LEVEL", None)
 
 if env_logging_level:
     # Convert string to level and set the logger level
@@ -28,7 +40,7 @@ if env_logging_level:
         logger.setLevel(logging.INFO)
 
 # URL of the webpage you want to scrape
-url = os.environ.get('MODEL_LIBRARY_URL', "https://ollama.com/library")
+url = os.environ.get("MODEL_LIBRARY_URL", "https://ollama.com/library")
 logger.info(f"Starting web scraping for URL: {url}")
 
 try:
@@ -52,7 +64,7 @@ repo_list = []
 # Select all model entries (they're wrapped in <a> tags)
 model_entries = soup.find_all("a", class_="group w-full space-y-5")
 if model_entries:
-    logger.info(f"Found {len(model_entries)} model entries")
+    logger.info(f"Found {len(model_entries)} model entries.")
 else:
     logger.warning("No model entries found - check if page structure has changed")
 
@@ -68,7 +80,7 @@ for index, entry in enumerate(model_entries, 1):
     logger.debug(f"Processing model entry {index}/{len(model_entries)}")
 
     # Extract the name (now using the correct selector)
-    name = entry.select_one('.group-hover\\:underline').text.strip()
+    name = entry.select_one(".group-hover\\:underline").text.strip()
     if name:
         logger.debug(f"Extracted name: {name}")
     else:
@@ -79,22 +91,26 @@ for index, entry in enumerate(model_entries, 1):
     sizes = []
 
     # Get capabilities (tools)
-    capability_elements = entry.find_all('span', {'x-test-capability': True})
-    capabilities = [capability.text.strip() for capability in capability_elements] if capability_elements else []
+    capability_elements = entry.find_all("span", {"x-test-capability": True})
+    capabilities = (
+        [capability.text.strip() for capability in capability_elements]
+        if capability_elements
+        else []
+    )
     logger.debug(f"Extracted capabilities: {capabilities}")
 
     # Get sizes
-    size_elements = entry.find_all('span', {'x-test-size': True})
+    size_elements = entry.find_all("span", {"x-test-size": True})
     sizes = [size.text.strip() for size in size_elements] if size_elements else []
     logger.debug(f"Extracted sizes: {sizes}")
 
     # Extract the updated date
-    updated_elem = entry.find('span', {'x-test-updated': True})
+    updated_elem = entry.find("span", {"x-test-updated": True})
     updated = updated_elem.text.strip() if updated_elem else ""
     logger.debug(f"Extracted update date: {updated}")
 
     # Extract pull count and tag count
-    pull_count_element = entry.find('span', {'x-test-pull-count': True})
+    pull_count_element = entry.find("span", {"x-test-pull-count": True})
     pull_count = pull_count_element.text.strip() if pull_count_element else ""
     logger.debug(f"Extracted pull count: {pull_count}")
 
@@ -114,20 +130,16 @@ for index, entry in enumerate(model_entries, 1):
         repo_list.append(entry_data)
         logger.debug(f"Added entry to repo_list: {entry_data}")
 
-logger.info(f"Processed {len(repo_list)} models successfully")
+logger.info(f"Processed {len(repo_list)} models.")
 
 try:
     # Write the repo_list to a JSON file
-    os.makedirs("data", exist_ok=True)
-    with open("data/library.json", "w", encoding="utf-8") as f:
+    with open(f"{DATA_PATH}/library.json", "w", encoding="utf-8") as f:
         json.dump(repo_list, f, ensure_ascii=False, indent=4)
-    logger.info("Successfully wrote data to library.json")
-except OSError as e:
-    logger.error(f"Failed to create directory: {e}")
-    raise
+    logger.info(f"Wrote data to {DATA_PATH}/library.json")
 except IOError as e:
     logger.error(f"Failed to write JSON file: {e}")
     raise
 
-logger.info("Scraping process completed!")
+logger.info("Scraping process complete.")
 print("# Scrape complete!")

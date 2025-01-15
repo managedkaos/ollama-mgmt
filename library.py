@@ -32,10 +32,12 @@ for repo in sorted_repo_list:
     name = repo["name"]
 
     # Extract the size value
-    size = ', '.join(repo.get("sizes", [])) if repo.get("sizes") else None
+    size = ", ".join(repo.get("sizes", [])) if repo.get("sizes") else None
 
     # Get the tools supported
-    capabilities = ', '.join(repo.get("capabilities", [])) if repo.get("capabilities") else None
+    capabilities = (
+        ", ".join(repo.get("capabilities", [])) if repo.get("capabilities") else None
+    )
 
     # Get the updated time
     updated = repo.get("updated", "N/A")
