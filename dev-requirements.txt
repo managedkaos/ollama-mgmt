@@ -1,4 +1,5 @@
 flake8
+pylint
 black
 pytest
-ruff
+isort

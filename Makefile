@@ -5,29 +5,39 @@ status:
 	@echo "open-webui : $(shell curl -s -o /dev/null localhost:9595/health && echo "Open-WebUI is running" || echo "down")"
 
 lint:
-	flake8 --ignore=E501,W503 *.py
-	ruff check --diff *.py
+	flake8 *.py
+	pylint *.py
+ifeq ($(CI),true)
+	isort --check-only *.py
+	black --check *.py
+else
+	actionlint .github/workflows/*.yml
+	isort --diff *.py
 	black --diff *.py
-
-ruff:
-	ruff format *.py
+endif
 
 black:
 	black *.py
+
+isort:
+	isort *.py
 
 list:
 	ollama list
 
 dev-requirements:
-	pip3 install -r dev-requirements.txt
+	pip3 install --requirement dev-requirements.txt
 
 requirements:
-	pip3 install -r requirements.txt
+	pip3 install --requirement requirements.txt
+
+curl:
+	curl https://ollama.com/library > data/ollama-library.html
 
 scrape:
 	python3 scrape.py
 
-library: scrape
+library:
 	python3 library.py
 
 update: status
@@ -79,4 +89,4 @@ x_update: $(patsubst %,pull-%, $(shell ollama list | grep -v NAME | cut -d: -f1)
 pull-%:
 	ollama pull $*
 
-.PHONY: status list requirements scrape library update_models start url stop clean nuke x_update
+.PHONY: status list requirements scrape library update_models start url stop clean nuke x_update isort

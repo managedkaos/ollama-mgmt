@@ -1,4 +1,3 @@
 data/
-library.json
-
-
+logs/
+__pycache__/
