@@ -7,6 +7,7 @@ import dateparser
 from tabulate import tabulate
 
 from logger_config import setup_logger
+from data_config import LIBRARY_JSON
 
 # Set up logger
 logger = setup_logger(__name__)
@@ -25,7 +26,7 @@ def parse_updated_time(updated_str):
 logger.debug("Loading repository data from library.json")
 # Load the repo list from the JSON file
 try:
-    with open("data/library.json", "r", encoding="utf-8") as f:
+    with open(LIBRARY_JSON, "r", encoding="utf-8") as f:
         repo_list = json.load(f)
     logger.info("Loaded %d repositories", len(repo_list))
 except (IOError, json.JSONDecodeError) as e:

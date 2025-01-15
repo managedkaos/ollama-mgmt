@@ -10,23 +10,14 @@ from bs4 import BeautifulSoup
 import requests
 
 from logger_config import setup_logger
+from data_config import setup_data_dirs, LIBRARY_JSON, MODEL_LIBRARY_URL
 
-
-# Configure data and logging dirs
-DATA_PATH = "./data"
-
-try:
-    # Write the repo_list to a JSON file
-    os.makedirs(DATA_PATH, exist_ok=True)
-except OSError as e:
-    print(f"Failed to create directory: {e}")
-    raise
 
 # Set up logger
 logger = setup_logger(__name__)
 
 # URL of the webpage you want to scrape
-url = os.environ.get("MODEL_LIBRARY_URL", "https://ollama.com/library")
+url = MODEL_LIBRARY_URL
 logger.info("Starting web scraping for URL: %s", url)
 
 try:
@@ -89,10 +80,15 @@ for index, entry in enumerate(model_entries, 1):
     updated = updated_elem.text.strip() if updated_elem else ""
     logger.debug("Extracted update date: %s", updated)
 
-    # Extract pull count and tag count
+    # Extract pull count
     pull_count_element = entry.find("span", {"x-test-pull-count": True})
     pull_count = pull_count_element.text.strip() if pull_count_element else ""
     logger.debug("Extracted pull count: %s", pull_count)
+
+    # Extract description
+    description_element = entry.find('p', {'class': 'max-w-lg break-words text-neutral-800 text-md'})
+    description = description_element.text.strip() if description_element else ""
+    logger.debug("Extracted description: %s", description)
 
     # Create entry dictionary
     if name:
@@ -102,6 +98,7 @@ for index, entry in enumerate(model_entries, 1):
             "sizes": sizes,
             "updated": updated,
             "pull_count": pull_count,
+            "description": description,
         }
         repo_list.append(entry_data)
         logger.debug("Added entry to repo_list: %s", entry_data)
@@ -109,10 +106,10 @@ for index, entry in enumerate(model_entries, 1):
 logger.info("Processed %d models.", len(repo_list))
 
 try:
-    # Write the repo_list to a JSON file
-    with open(f"{DATA_PATH}/library.json", "w", encoding="utf-8") as f:
+    setup_data_dirs()
+    with open(LIBRARY_JSON, "w", encoding="utf-8") as f:
         json.dump(repo_list, f, ensure_ascii=False, indent=4)
-    logger.info("Wrote data to %s/library.json", DATA_PATH)
+    logger.info("Wrote data to %s", LIBRARY_JSON)
 except IOError as e:
     logger.error("Failed to write JSON file: %s", e)
     raise
