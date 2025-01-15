@@ -27,7 +27,6 @@ list:
 
 dev-requirements:
 	pip3 install --requirement dev-requirements.txt
-	brew install actionlint
 
 requirements:
 	pip3 install --requirement requirements.txt
