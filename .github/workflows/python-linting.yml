@@ -21,3 +21,25 @@ jobs:
 
     - name: Lint
       run: make lint
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make requirements
+
+      - name: Run scraping tests
+        run: make scrape
+
+      - name: Run library tests
+        run: make library

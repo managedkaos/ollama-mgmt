@@ -5,6 +5,7 @@ status:
 	@echo "open-webui : $(shell curl -s -o /dev/null localhost:9595/health && echo "Open-WebUI is running" || echo "down")"
 
 lint:
+	actionlint .github/workflows/*.yml
 	flake8 *.py
 	pylint *.py
 ifeq ($(CI),true)
