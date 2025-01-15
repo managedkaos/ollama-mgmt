@@ -30,7 +30,7 @@ curl:
 scrape:
 	python3 scrape.py
 
-library: scrape
+library:
 	python3 library.py
 
 update: status

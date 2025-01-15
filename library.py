@@ -13,7 +13,7 @@ def parse_updated_time(updated_str):
 
 
 # Load the repo list from the JSON file
-with open("library.json", "r", encoding="utf-8") as f:
+with open("data/library.json", "r", encoding="utf-8") as f:
     repo_list = json.load(f)
 
 # Convert the "Updated" field to datetime and sort the list
@@ -32,18 +32,18 @@ for repo in sorted_repo_list:
     name = repo["name"]
 
     # Extract the size value
-    size = repo.get("sizes", ["N/A"])[0] if repo.get("sizes") else "N/A"
+    size = ', '.join(repo.get("sizes", [])) if repo.get("sizes") else None
 
-    # Check if tools are supported
-    has_tools = "Yes" if "tools" in repo.get("capabilities", []) else "No"
+    # Get the tools supported
+    capabilities = ', '.join(repo.get("capabilities", [])) if repo.get("capabilities") else None
 
     # Get the updated time
     updated = repo.get("updated", "N/A")
 
-    table_data.append([name, size, has_tools, updated])
+    table_data.append([name, size, capabilities, updated])
 
 # Define the table headers
-headers = ["Model Name", "Size", "Tools Support", "Last Updated"]
+headers = ["Model Name", "Size", "Capabilities", "Last Updated"]
 
 # Print the table
 print(tabulate(table_data, headers=headers, tablefmt="pretty"))
