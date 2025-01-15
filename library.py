@@ -1,6 +1,7 @@
 """
 This script reads the library.json file and prints the contents in a tabular format.
 """
+
 from datetime import datetime
 import json
 import dateparser
@@ -12,6 +13,7 @@ from data_config import LIBRARY_JSON
 # Set up logger
 logger = setup_logger(__name__)
 
+
 # Function to parse the "Updated" string into a datetime object
 def parse_updated_time(updated_str):
     """
@@ -22,6 +24,7 @@ def parse_updated_time(updated_str):
         logger.debug("Parsed date '%s' to %s", updated_str, parsed_date)
         return parsed_date if parsed_date else datetime.min
     return datetime.min
+
 
 logger.debug("Loading repository data from library.json")
 # Load the repo list from the JSON file

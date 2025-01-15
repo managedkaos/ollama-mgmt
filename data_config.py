@@ -1,6 +1,7 @@
 """
 Configuration module for data-related settings and paths.
 """
+
 import os
 from pathlib import Path
 
@@ -13,6 +14,7 @@ LIBRARY_JSON = DATA_DIR / "library.json"
 
 # Model library URL configuration
 MODEL_LIBRARY_URL = os.environ.get("MODEL_LIBRARY_URL", "https://ollama.com/library")
+
 
 def setup_data_dirs():
     """

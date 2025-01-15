@@ -5,8 +5,9 @@ status:
 	@echo "open-webui : $(shell curl -s -o /dev/null localhost:9595/health && echo "Open-WebUI is running" || echo "down")"
 
 lint:
-	flake8 --ignore=E501,W503 *.py
+	flake8 *.py
 	pylint *.py
+	isort --diff *.py
 	black --diff *.py
 
 ruff:

@@ -26,7 +26,9 @@ def get_models():
         response = requests.get(f"{OLLAMA_API_URL}/tags", timeout=30)
         if response.status_code == 200:
             models_data = response.json()
-            logger.debug("Successfully fetched %d models", len(models_data.get("models", [])))
+            logger.debug(
+                "Successfully fetched %d models", len(models_data.get("models", []))
+            )
             return models_data.get("models", [])
         logger.error("Failed to fetch models. Status code: %d", response.status_code)
         return []

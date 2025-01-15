@@ -2,9 +2,8 @@
 This script scrapes the Ollama model library page and extracts
 the model names, capabilities, sizes, updated dates, and pull counts.
 """
+
 import json
-import logging
-import os
 
 from bs4 import BeautifulSoup
 import requests
@@ -25,8 +24,7 @@ try:
     response = requests.get(url, timeout=30)
     response.raise_for_status()
     logger.debug(
-        "Successfully retrieved page with status code: %s",
-        response.status_code
+        "Successfully retrieved page with status code: %s", response.status_code
     )
 except requests.exceptions.RequestException as e:
     logger.error("Failed to fetch URL: %s", e)
@@ -86,7 +84,9 @@ for index, entry in enumerate(model_entries, 1):
     logger.debug("Extracted pull count: %s", pull_count)
 
     # Extract description
-    description_element = entry.find('p', {'class': 'max-w-lg break-words text-neutral-800 text-md'})
+    description_element = entry.find(
+        "p", {"class": "max-w-lg break-words text-neutral-800 text-md"}
+    )
     description = description_element.text.strip() if description_element else ""
     logger.debug("Extracted description: %s", description)
 

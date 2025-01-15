@@ -1,8 +1,10 @@
 """
-Shared logging configuration for the Ollama management scripts.
+Shared logging configuration
 """
+
 import logging
 import os
+
 
 def setup_logger(name):
     """
@@ -53,7 +55,9 @@ def setup_logger(name):
             if level in [logging.DEBUG, logging.INFO, logging.WARNING, logging.ERROR]:
                 logger.setLevel(level)
             else:
-                print(f"Invalid logging level: {env_logging_level}. Defaulting to INFO.")
+                print(
+                    f"Invalid logging level: {env_logging_level}. Defaulting to INFO."
+                )
         except AttributeError:
             print(f"Invalid logging level: {env_logging_level}. Defaulting to INFO.")
 
