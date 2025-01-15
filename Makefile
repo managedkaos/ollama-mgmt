@@ -24,6 +24,9 @@ dev-requirements:
 requirements:
 	pip3 install -r requirements.txt
 
+curl:
+	curl https://ollama.com/library > data/ollama-library.html
+
 scrape:
 	python3 scrape.py
 
