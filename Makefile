@@ -5,13 +5,13 @@ status:
 	@echo "open-webui : $(shell curl -s -o /dev/null localhost:9595/health && echo "Open-WebUI is running" || echo "down")"
 
 lint:
-	actionlint .github/workflows/*.yml
 	flake8 *.py
 	pylint *.py
 ifeq ($(CI),true)
 	isort --check-only *.py
 	black --check *.py
 else
+	actionlint .github/workflows/*.yml
 	isort --diff *.py
 	black --diff *.py
 endif
@@ -26,10 +26,11 @@ list:
 	ollama list
 
 dev-requirements:
-	pip3 install -r dev-requirements.txt
+	pip3 install --requirement dev-requirements.txt
+	brew install actionlint
 
 requirements:
-	pip3 install -r requirements.txt
+	pip3 install --requirement requirements.txt
 
 curl:
 	curl https://ollama.com/library > data/ollama-library.html
