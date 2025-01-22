@@ -44,8 +44,8 @@ update: status
 	@python3 update.py
 
 start:
-	if [ ! -d $(OPEN_WEBUI_HOME)/data ]; then mkdir -p $(OPEN_WEBUI_HOME)/data; fi
-
+	@if [ ! -d $(OPEN_WEBUI_HOME)/data ]; then mkdir -p $(OPEN_WEBUI_HOME)/data; fi
+	@docker pull ghcr.io/open-webui/open-webui:main
 	-@docker run --detach \
 		--network="host" \
 		--volume $(OPEN_WEBUI_HOME)/data:/app/backend/data \
@@ -54,7 +54,7 @@ start:
 		--restart always \
 		--name open-webui \
 		ghcr.io/open-webui/open-webui:main || \
-	printf "\n\nThe container is already running.\n\n"
+	printf "\nIs the container already running?\n\n"
 	@printf "http://localhost:9595\n\n"
 
 url:
