@@ -46,7 +46,7 @@ def select_models_by_size(model_list):
 
 def pull_models(model_list):
     """
-    Pull models from the Ollama server
+    Pull models from the Ollama model registry
     """
     for model_item in model_list:
         model_name = model_item["name"]
