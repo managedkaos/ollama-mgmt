@@ -114,4 +114,3 @@ except IOError as e:
     raise
 
 logger.info("Scraping process complete.")
-print("# Scrape complete!")
