@@ -47,10 +47,16 @@ class OllamaModelsSpider(scrapy.Spider):
         model_size_text = response.css("p::text").re_first(r"([\d.]+)\s*GB")
         model_size = float(model_size_text) if model_size_text else None
 
+        # Extract last updated time
+        last_updated = response.css("span[x-test-updated]::text").get()
+        if last_updated:
+            last_updated = last_updated.strip()
+
         yield {
             "name": model_name,
             "description": model_desc,
             "url": model_url,
             "parameter_size": param_size,
             "size_gb": model_size,
+            "last_updated": last_updated,  # New field added!
         }

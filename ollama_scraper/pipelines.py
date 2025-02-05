@@ -10,18 +10,21 @@ class MergeModelsPipeline:
         model_url = item["url"]
         param_size = item["parameter_size"]
         size_gb = item["size_gb"]
+        last_updated = item["last_updated"]
 
-        # If model not seen before, initialize
+        # If model is new, initialize it
         if model_name not in self.models:
             self.models[model_name] = {
                 "name": model_name,
                 "description": model_desc,
                 "url": model_url,
+                "last_updated": last_updated,  # Store last updated at the model level
                 "parameter_sizes": {}
             }
 
         # Add parameter size mapping
         self.models[model_name]["parameter_sizes"][param_size] = size_gb
+
         return item  # Scrapy requires returning the item
 
     def close_spider(self, spider):
