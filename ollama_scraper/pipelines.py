@@ -29,7 +29,7 @@ class MergeModelsPipeline:
 
     def close_spider(self, spider):
         # Save merged output when Scrapy finishes
-        with open("./data/merged_models.json", "w") as f:
+        with open("./data/library.json", "w") as f:
             json.dump(list(self.models.values()), f, indent=4)
 
-        spider.logger.info("✅ Merged data saved to merged_models.json")
+        spider.logger.info("✅ Merged data saved to library.json")

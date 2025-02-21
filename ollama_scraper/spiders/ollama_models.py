@@ -23,6 +23,10 @@ class OllamaModelsSpider(scrapy.Spider):
             parameter_sizes = model.css("span[x-test-size]::text").getall()
             parameter_sizes = [size.strip().lower() for size in parameter_sizes]  # Normalize
 
+            # Extract capabilities (e.g., ["tools", "chat"])
+            capabilities = model.css("span[x-test-capability]::text").getall()
+            capabilities = [cap.strip().lower() for cap in capabilities]  # Normalize
+
             # Generate a new URL for each parameter size and request it
             for param_size in parameter_sizes:
                 model_variant_url = f"https://ollama.com/library/{model_slug}:{param_size}"
@@ -33,7 +37,8 @@ class OllamaModelsSpider(scrapy.Spider):
                         'model_name': model_name,
                         'model_desc': model_desc,
                         'model_url': model_base_url,
-                        'param_size': param_size
+                        'param_size': param_size,
+                        'capabilities': capabilities
                     }
                 )
 
@@ -42,6 +47,7 @@ class OllamaModelsSpider(scrapy.Spider):
         model_desc = response.meta["model_desc"]
         model_url = response.meta["model_url"]
         param_size = response.meta["param_size"]
+        capabilities = response.meta["capabilities"]
 
         # Extract size in GB for the specific parameter size
         model_size_text = response.css("p::text").re_first(r"([\d.]+)\s*GB")
@@ -58,5 +64,6 @@ class OllamaModelsSpider(scrapy.Spider):
             "url": model_url,
             "parameter_size": param_size,
             "size_gb": model_size,
-            "last_updated": last_updated,  # New field added!
+            "last_updated": last_updated,
+            "capabilities": capabilities  # New field added!
         }
