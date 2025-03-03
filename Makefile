@@ -1,5 +1,4 @@
 OPEN_WEBUI_HOME = $(shell pwd)/open-webui
-LOGLEVEL = WARNING
 
 status:
 	@echo "ollama     : $(shell curl -s localhost:11434 || echo "down")"
@@ -36,7 +35,7 @@ curl:
 	curl https://ollama.com/library > data/ollama-library.html
 
 scrape:
-	scrapy crawl ollama_models --loglevel $(LOGLEVEL)
+	scrapy crawl ollama_models
 
 library:
 	python3 library.py

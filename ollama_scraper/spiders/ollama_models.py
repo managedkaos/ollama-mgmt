@@ -21,14 +21,15 @@ class OllamaModelsSpider(scrapy.Spider):
 
 
     def parse(self, response):
-        self.logger.info("Starting web scraping for URL: %s", response.url)
+        self.logger.info("Scraping %s", response.url)
 
         # Select all model elements from the page
         model_entries = response.css("a[href^='/library/']")
         if model_entries:
             self.logger.info("Found %d model entries.", len(model_entries))
         else:
-            self.logger.warning("No model entries found - check if page structure has changed")
+            self.logger.critical("No model entries found - check if page structure has changed")
+            raise scrapy.exceptions.CloseSpider("no_models_found")
 
         for model in model_entries:
             model_name = model.css("span.group-hover\\:underline::text").get()
@@ -90,10 +91,14 @@ class OllamaModelsSpider(scrapy.Spider):
             "parameter_size": param_size,
             "size_gb": model_size,
             "last_updated": last_updated,
-            "capabilities": capabilities  # New field added!
+            "capabilities": capabilities
         }
 
     def closed(self, reason):
         """ Logs a final summary message when the spider closes """
         self.logger.info("Processed %d models.", self.models_scraped)
-        self.logger.info("Scraping process complete.")
+
+        if self.models_scraped == 0:
+            self.logger.critical("❌ No models were scraped. Has the site structure changed?")
+        else:
+            self.logger.info("Scraping process complete.")

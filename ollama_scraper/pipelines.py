@@ -32,4 +32,4 @@ class MergeModelsPipeline:
         with open("./data/library.json", "w") as f:
             json.dump(list(self.models.values()), f, indent=4)
 
-        spider.logger.info("✅ Merged data saved to library.json")
+        spider.logger.info("✅ Data saved to library.json")
