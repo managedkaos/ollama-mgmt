@@ -29,7 +29,6 @@ class OllamaModelsSpider(scrapy.Spider):
             self.logger.info("Found %d model entries.", len(model_entries))
         else:
             self.logger.critical("No model entries found - check if page structure has changed")
-            raise scrapy.exceptions.CloseSpider("no_models_found")
 
         for model in model_entries:
             model_name = model.css("span.group-hover\\:underline::text").get()
