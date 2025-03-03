@@ -30,7 +30,8 @@ for model in model_list:
 
     # Extract parameter sizes
     if "parameter_sizes" in model:
-        sizes = ", ".join(model["parameter_sizes"].keys())  # Get sizes as comma-separated values
+        # Get sizes as comma-separated values
+        sizes = ", ".join(model["parameter_sizes"].keys())
     else:
         sizes = "N/A"
 
