@@ -1,13 +1,36 @@
 import scrapy
-import json
+import logging
 
 class OllamaModelsSpider(scrapy.Spider):
     name = "ollama_models"
     start_urls = ["https://ollama.com/library"]
 
+    # Set up logger
+    logger = logging.getLogger(__name__)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.models_scraped = 0  # Counter for processed models
+
+        # Configure a custom logger
+        self.logger = logging.getLogger(self.name)  # Use spider name for log namespace
+        self.logger.setLevel(logging.INFO)  # Only show INFO level and above
+
+        # Prevent duplicate logs from Scrapy
+        logging.getLogger("scrapy").setLevel(logging.WARNING)
+
+
     def parse(self, response):
+        self.logger.info("Starting web scraping for URL: %s", response.url)
+
         # Select all model elements from the page
-        for model in response.css("a[href^='/library/']"):
+        model_entries = response.css("a[href^='/library/']")
+        if model_entries:
+            self.logger.info("Found %d model entries.", len(model_entries))
+        else:
+            self.logger.warning("No model entries found - check if page structure has changed")
+
+        for model in model_entries:
             model_name = model.css("span.group-hover\\:underline::text").get()
             if model_name:
                 model_name = model_name.strip()
@@ -30,6 +53,8 @@ class OllamaModelsSpider(scrapy.Spider):
             # Generate a new URL for each parameter size and request it
             for param_size in parameter_sizes:
                 model_variant_url = f"https://ollama.com/library/{model_slug}:{param_size}"
+                self.models_scraped += 1  # Increment model count
+
                 yield response.follow(
                     model_variant_url,
                     callback=self.parse_model_page,
@@ -67,3 +92,8 @@ class OllamaModelsSpider(scrapy.Spider):
             "last_updated": last_updated,
             "capabilities": capabilities  # New field added!
         }
+
+    def closed(self, reason):
+        """ Logs a final summary message when the spider closes """
+        self.logger.info("Processed %d models.", self.models_scraped)
+        self.logger.info("Scraping process complete.")
