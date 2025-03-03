@@ -35,7 +35,7 @@ curl:
 	curl https://ollama.com/library > data/ollama-library.html
 
 scrape:
-	python3 scrape.py
+	scrapy crawl ollama_models
 
 library:
 	python3 library.py

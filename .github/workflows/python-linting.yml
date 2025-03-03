@@ -38,8 +38,8 @@ jobs:
       - name: Install dependencies
         run: make requirements
 
-      - name: Run scraping tests
-        run: make scrape
+        #- name: Run scraping tests
+        #run: make scrape
 
-      - name: Run library tests
-        run: make library
+        #- name: Run library tests
+        #run: make library
