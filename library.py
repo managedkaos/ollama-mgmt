@@ -3,7 +3,9 @@ This script reads the library.json file and prints the contents in a tabular for
 """
 
 import json
+
 from tabulate import tabulate
+
 from data_config import LIBRARY_JSON
 from logger_config import setup_logger
 
