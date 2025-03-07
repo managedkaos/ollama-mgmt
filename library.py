@@ -37,10 +37,15 @@ for model in model_list:
     else:
         sizes = "N/A"
 
-    table_data.append([name, sizes, description, url])
+    #table_data.append([name, sizes, description, url])
+    table_data.append([name, sizes])
 
 # Define the table headers
-headers = ["Model Name", "Sizes", "Description", "URL"]
+# headers = ["Model Name", "Sizes", "Description", "URL"]
+headers = ["Model Name", "Sizes"]
+
+# Sort the table data by model name
+table_data.sort(key=lambda x: x[0])
 
 # Print the table
 print(tabulate(table_data, headers=headers, tablefmt="pretty"))
