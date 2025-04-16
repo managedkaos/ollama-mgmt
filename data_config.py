@@ -9,8 +9,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).parent
 
 # Data directory configuration
+# DATA_DIR = f"{BASE_DIR}/data"
 DATA_DIR = BASE_DIR / "data"
-LIBRARY_JSON = DATA_DIR / "library.json"
+LIBRARY_JSON = f"{DATA_DIR}/library.json"
 
 # Model library URL configuration
 MODEL_LIBRARY_URL = os.environ.get("MODEL_LIBRARY_URL", "https://ollama.com/library")
