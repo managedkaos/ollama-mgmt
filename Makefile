@@ -42,7 +42,7 @@ scrape-models:
 	scrapy crawl ollama_models
 
 library-models:
-	python3 library.py
+	@python3 library.py
 
 update-models: status
 	@python3 update.py

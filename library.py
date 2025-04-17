@@ -69,7 +69,7 @@ def process_model_data(model_list):
         # Extract parameter sizes
         if "parameter_sizes" in model:
             # Get sizes as comma-separated values
-            sizes = ", ".join(model["parameter_sizes"].keys())
+            sizes = ", ".join(sorted(model["parameter_sizes"].keys(), key=lambda x: int(x.replace('b', ''))))
         else:
             sizes = "-"
 
