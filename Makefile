@@ -41,7 +41,7 @@ curl-ollama-library:
 scrape-models:
 	scrapy crawl ollama_models
 
-library-models:
+display-library:
 	@python3 library.py
 
 update-models: status
