@@ -44,9 +44,13 @@ scrape-models:
 display-library:
 	@python3 library.py
 
+update: update-models pull-open-webui update-ollama
+
 update-models: status
 	@python3 update.py
 
+update-ollama:
+	@brew upgrade ollama
 
 ## Open-WebUI Targets
 pull-open-webui:
