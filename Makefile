@@ -78,6 +78,8 @@ restart-open-webui: stop-open-webui
 url:
 	@printf "\n\nhttp://localhost:9595\n\n"
 
+open-webui:
+	open http://localhost:9595
 
 clean: stop
 	-docker rm open-webui
