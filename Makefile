@@ -1,4 +1,5 @@
 OPEN_WEBUI_HOME = $(shell pwd)/open-webui
+OPEN_WEBUI_VERSION = git-0ffc047
 
 status:
 	@echo "ollama     : $(shell curl -s localhost:11434 || echo "down")"
@@ -54,7 +55,7 @@ update-ollama:
 
 ## Open-WebUI Targets
 pull-open-webui:
-	@docker pull ghcr.io/open-webui/open-webui:main
+	@docker pull ghcr.io/open-webui/open-webui:$(OPEN_WEBUI_VERSION)
 
 start-open-webui:
 	@if [ ! -d $(OPEN_WEBUI_HOME)/data ]; then mkdir -p $(OPEN_WEBUI_HOME)/data; fi
@@ -65,15 +66,19 @@ start-open-webui:
 		--env OLLAMA_BASE_URL=http://localhost:11434 \
 		--restart always \
 		--name open-webui \
-		ghcr.io/open-webui/open-webui:main || \
+		ghcr.io/open-webui/open-webui:$(OPEN_WEBUI_VERSION) || \
 	printf "\nIs the container already running?\n\n"
 	@printf "http://localhost:9595\n\n"
 
 stop-open-webui:
 	-docker stop open-webui
 
-restart-open-webui: stop-open-webui
-	-docker restart open-webui
+restart-ollama:
+	brew services restart ollama
+
+restart-open-webui: stop-open-webui start-open-webui
+
+restart: restart-ollama restart-open-webui status
 
 url:
 	@printf "\n\nhttp://localhost:9595\n\n"
@@ -88,7 +93,7 @@ clean: stop
 ## Management Targets
 x_update: $(patsubst %,pull-%, $(shell ollama list | grep -v NAME | cut -d: -f1))
 	ollama list
-	docker pull ghcr.io/open-webui/open-webui:main
+	docker pull ghcr.io/open-webui/open-webui:$(OPEN_WEBUI_VERSION)
 
 pull-%:
 	ollama pull $*
@@ -109,4 +114,4 @@ nuke: stop clean
 		echo "Date confirmation failed. Aborting..."; \
 	fi
 
-.PHONY: status list requirements scrape library update_models start url stop clean nuke x_update isort
+.PHONY: status list requirements scrape library update_models start url stop clean nuke x_update isort open-webui
